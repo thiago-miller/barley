@@ -11,6 +11,7 @@ bcl_file_slurp (const char *filename, size_t *out_size, BclError *out_err)
 	char *buf = NULL;
 	size_t read_bytes = 0;
 	size_t size = 0;
+	long bytes = 0;
 
 	fp = fopen (filename, "r");
 	if (fp == NULL)
@@ -25,12 +26,14 @@ bcl_file_slurp (const char *filename, size_t *out_size, BclError *out_err)
 			goto RET;
 		}
 
-	size = ftell (fp);
-	if (size == EOF)
+	bytes = ftell (fp);
+	if (bytes == EOF)
 		{
 			err = errno;
 			goto RET;
 		}
+
+	size = (size_t) bytes;
 
 	buf = malloc (size + 1);
 	if (buf == NULL)
