@@ -40,7 +40,7 @@ bcl_get_device_id (cl_device_type device_type, BclError *out_err)
 
 	clGetPlatformIDs (num_platforms, platforms, NULL);
 
-	for (int i = 0; i < num_platforms; i++)
+	for (cl_uint i = 0; i < num_platforms; i++)
 		{
 			cl_uint num_devices = 0;
 
