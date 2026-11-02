@@ -8,7 +8,7 @@
 #include <string.h>
 #include <errno.h>
 
-#define BCL_KERNEL_SOURCE "kernels/tensor_ops.cl"
+#define BCL_KERNEL_PATH "kernels/tensor_ops.cl"
 
 static const char *kernel_names[BCL_KERNEL_COUNT] = {
 	[BCL_KERNEL_ADD] = "tensor_add"
@@ -106,6 +106,7 @@ bcl_env_alloc (cl_device_type device_type, BclError *out_err)
 	cl_program program = NULL;
 	cl_kernel kernels[BCL_KERNEL_COUNT] = {0};
 
+	const char *kernel_path = NULL;
 	char *kernel_source = NULL;
 	size_t log_size = 0;
 	char *log = NULL;
@@ -128,7 +129,11 @@ bcl_env_alloc (cl_device_type device_type, BclError *out_err)
 			goto CLEAN;
 		}
 
-	kernel_source = bcl_file_slurp (BCL_KERNEL_SOURCE, NULL, &err);
+	kernel_path = getenv ("BCL_KERNEL_PATH");
+	if (kernel_path == NULL)
+		kernel_path = BCL_KERNEL_PATH;
+
+	kernel_source = bcl_file_slurp (kernel_path, NULL, &err);
 	if (err != BCL_SUCCESS)
 		goto CLEAN;
 
