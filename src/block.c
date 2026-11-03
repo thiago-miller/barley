@@ -66,7 +66,7 @@ bcl_block_free (BclBlock *block)
 }
 
 float *
-bcl_block_read (BclBlock *block, cl_command_queue queue, size_t size, BclError *out_err)
+bcl_block_read (BclBlock *block, cl_command_queue queue, size_t offset, size_t size, BclError *out_err)
 {
 	BclError err = BCL_SUCCESS;
 	cl_int cl_err = CL_SUCCESS;
@@ -83,8 +83,8 @@ bcl_block_read (BclBlock *block, cl_command_queue queue, size_t size, BclError *
 			goto ERR;
 		}
 
-	cl_err = clEnqueueReadBuffer (queue, block->data, CL_TRUE, 0, sizeof (float) * size,
-			data, 0, NULL, NULL);
+	cl_err = clEnqueueReadBuffer (queue, block->data, CL_TRUE, offset,
+			sizeof (float) * size, data, 0, NULL, NULL);
 	if (cl_err != CL_SUCCESS)
 		{
 			err = cl_err;
@@ -105,12 +105,12 @@ ERR:
 }
 
 BclError
-bcl_block_write (BclBlock *block, cl_command_queue queue, float *data, size_t size)
+bcl_block_write (BclBlock *block, cl_command_queue queue, float *data, size_t offset, size_t size)
 {
 	BclError err = BCL_SUCCESS;
 	cl_int cl_err = CL_SUCCESS;
 
-	cl_err = clEnqueueWriteBuffer (queue, block->data, CL_TRUE, 0,
+	cl_err = clEnqueueWriteBuffer (queue, block->data, CL_TRUE, offset,
 			sizeof (float) * size, data, 0, NULL, NULL);
 	if (cl_err != CL_SUCCESS)
 		err = cl_err;
