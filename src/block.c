@@ -1,7 +1,7 @@
 #include <bcl/block.h>
 
 BclBlock *
-bcl_block_alloc (cl_context context, float *data, size_t size, int ro, BclError *out_err)
+bcl_block_alloc (BclEnv *env, float *data, size_t size, int ro, BclError *out_err)
 {
 	BclBlock *block = NULL;
 
@@ -16,7 +16,7 @@ bcl_block_alloc (cl_context context, float *data, size_t size, int ro, BclError 
 	if (data != NULL)
 		flags |= CL_MEM_COPY_HOST_PTR;
 
-	d_data = clCreateBuffer (context, flags, sizeof (float) * size, data, &cl_err);
+	d_data = clCreateBuffer (env->context, flags, sizeof (float) * size, data, &cl_err);
 	if (cl_err != CL_SUCCESS)
 		{
 			err = cl_err;
@@ -31,10 +31,9 @@ bcl_block_alloc (cl_context context, float *data, size_t size, int ro, BclError 
 		}
 
 	*block = (BclBlock) {
-		.context = context,
-		.flags   = flags,
-		.data    = d_data,
-		.size    = size
+		.flags = flags,
+		.data  = d_data,
+		.size  = size
 	};
 
 RET:
@@ -64,7 +63,7 @@ bcl_block_free (BclBlock *block)
 }
 
 float *
-bcl_block_read (BclBlock *block, cl_command_queue queue, size_t offset, size_t size, BclError *out_err)
+bcl_block_read (BclBlock *block, BclEnv *env, size_t offset, size_t size, BclError *out_err)
 {
 	BclError err = BCL_SUCCESS;
 	cl_int cl_err = CL_SUCCESS;
@@ -81,7 +80,7 @@ bcl_block_read (BclBlock *block, cl_command_queue queue, size_t offset, size_t s
 			goto ERR;
 		}
 
-	cl_err = clEnqueueReadBuffer (queue, block->data, CL_TRUE, offset,
+	cl_err = clEnqueueReadBuffer (env->queue, block->data, CL_TRUE, offset,
 			sizeof (float) * size, data, 0, NULL, NULL);
 	if (cl_err != CL_SUCCESS)
 		{
@@ -103,12 +102,12 @@ ERR:
 }
 
 BclError
-bcl_block_write (BclBlock *block, cl_command_queue queue, float *data, size_t offset, size_t size)
+bcl_block_write (BclBlock *block, BclEnv *env, float *data, size_t offset, size_t size)
 {
 	BclError err = BCL_SUCCESS;
 	cl_int cl_err = CL_SUCCESS;
 
-	cl_err = clEnqueueWriteBuffer (queue, block->data, CL_TRUE, offset,
+	cl_err = clEnqueueWriteBuffer (env->queue, block->data, CL_TRUE, offset,
 			sizeof (float) * size, data, 0, NULL, NULL);
 	if (cl_err != CL_SUCCESS)
 		err = cl_err;

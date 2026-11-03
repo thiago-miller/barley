@@ -4,7 +4,7 @@
 #include <assert.h>
 
 BclTensor *
-bcl_tensor_alloc (cl_context context, size_t rank, size_t *shape, float *data, int ro, BclError *out_err)
+bcl_tensor_alloc (BclEnv *env, size_t rank, size_t *shape, float *data, int ro, BclError *out_err)
 {
 	assert (rank > 0);
 	assert (shape != NULL);
@@ -43,7 +43,7 @@ bcl_tensor_alloc (cl_context context, size_t rank, size_t *shape, float *data, i
 	for (size_t i = 0; i < rank; i++)
 		size *= shape[i];
 
-	block = bcl_block_alloc (context, data, size, ro, &err);
+	block = bcl_block_alloc (env, data, size, ro, &err);
 	if (err != BCL_SUCCESS)
 		goto ERR;
 
