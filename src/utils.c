@@ -1,7 +1,6 @@
 #include <bcl/utils.h>
 
 #include <stdlib.h>
-#include <errno.h>
 
 char *
 bcl_file_slurp (const char *filename, size_t *out_size, BclError *out_err)
@@ -17,20 +16,20 @@ bcl_file_slurp (const char *filename, size_t *out_size, BclError *out_err)
 	if (fp == NULL)
 		{
 			err = errno;
-			goto RET;
+			goto ERR;
 		}
 
 	if (fseek (fp, 0L, SEEK_END) == EOF)
 		{
 			err = errno;
-			goto RET;
+			goto ERR;
 		}
 
 	bytes = ftell (fp);
 	if (bytes == EOF)
 		{
 			err = errno;
-			goto RET;
+			goto ERR;
 		}
 
 	size = (size_t) bytes;
@@ -39,28 +38,26 @@ bcl_file_slurp (const char *filename, size_t *out_size, BclError *out_err)
 	if (buf == NULL)
 		{
 			err = errno;
-			goto RET;
+			goto ERR;
 		}
 
 	if (fseek (fp, 0L, SEEK_SET) == EOF)
 		{
 			err = errno;
-			goto RET;
+			goto ERR;
 		}
 
 	read_bytes = fread (buf, sizeof (char), size, fp);
 	if (read_bytes != size)
 		{
 			err = EIO;
-			goto RET;
+			goto ERR;
 		}
 
 	buf[size] = '\0';
+	fclose (fp);
 
 RET:
-	if (fp != NULL)
-		fclose (fp);
-
 	if (out_size != NULL)
 		*out_size = size;
 
@@ -68,4 +65,13 @@ RET:
 		*out_err = err;
 
 	return buf;
+
+ERR:
+	if (fp != NULL)
+		fclose (fp);
+
+	if (buf != NULL)
+		free (buf);
+
+	goto RET;
 }
