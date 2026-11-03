@@ -1,7 +1,6 @@
 #include <bcl/tensor.h>
 
 #include <string.h>
-#include <errno.h>
 #include <assert.h>
 
 BclTensor *

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <bcl/cl.h>
 #include <bcl/block.h>
 #include <bcl/error.h>
 #include <stdlib.h>

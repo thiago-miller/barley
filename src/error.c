@@ -4,7 +4,6 @@
 #include <bcl/cl_error.h>
 
 #include <string.h>
-#include <errno.h>
 
 const char *
 bcl_strerror (BclError err)

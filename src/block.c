@@ -1,7 +1,5 @@
 #include <bcl/block.h>
 
-#include <errno.h>
-
 BclBlock *
 bcl_block_alloc (cl_context context, float *data, size_t size, int ro, BclError *out_err)
 {

@@ -1,12 +1,10 @@
 #include <bcl/env.h>
 
-#include <bcl/cl.h>
 #include <bcl/utils.h>
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <errno.h>
 
 #define BCL_KERNEL_PATH "kernels/tensor_ops.cl"
 
