@@ -32,7 +32,7 @@ bcl_block_size (const BclBlock *block)
 	return block != NULL ? block->size : 0;
 }
 
-BclBlock * bcl_block_alloc (BclEnv *env, float *data, size_t size, int ro, BclError *out_err);
+BclBlock * bcl_block_alloc (const BclEnv *env, const float *data, size_t size, int ro, BclError *out_err);
 void       bcl_block_free  (BclBlock *block);
-float    * bcl_block_read  (BclBlock *block, BclEnv *env, size_t offset, size_t size, BclError *out_err);
-BclError   bcl_block_write (BclBlock *block, BclEnv *env, float *data, size_t offset, size_t size);
+float    * bcl_block_read  (const BclBlock *block, const BclEnv *env, size_t offset, size_t size, BclError *out_err);
+BclError   bcl_block_write (BclBlock *block, const BclEnv *env, const float *data, size_t offset, size_t size);

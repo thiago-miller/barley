@@ -2,7 +2,6 @@
 #include <bcl/env.h>
 #include <bcl/tensor.h>
 #include <bcl/tensor_ops.h>
-#include <bcl/block.h>
 #include <math.h>
 
 static BclEnv *env = NULL;
@@ -54,7 +53,7 @@ START_TEST (test_tensor_add_basic)
 	err = bcl_tensor_add (env, a, b, c);
 	ck_assert_int_eq (err, BCL_SUCCESS);
 
-	data_c = bcl_block_read (c->block, env, 0, 0, &err);
+	data_c = bcl_tensor_read (c, env, 0, 0, &err);
 	ck_assert_int_eq (err, BCL_SUCCESS);
 	ck_assert_ptr_nonnull (data_c);
 
@@ -111,7 +110,7 @@ START_TEST(test_tensor_add_broadcast_2d_1d)
 	err = bcl_tensor_add (env, a, b, c);
 	ck_assert_int_eq (err, BCL_SUCCESS);
 
-	data_c = bcl_block_read (c->block, env, 0, 0, &err);
+	data_c = bcl_tensor_read (c, env, 0, 0, &err);
 
 	for (int i = 0; i < 6; i++)
 		ck_assert_float_eq_tol (data_c[i], expected[i], 1e-5);

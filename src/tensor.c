@@ -3,7 +3,7 @@
 #include <assert.h>
 
 BclTensor *
-bcl_tensor_alloc (BclEnv *env, size_t rank, size_t *shape, float *data, int ro, BclError *out_err)
+bcl_tensor_alloc (const BclEnv *env, size_t rank, const size_t *shape, const float *data, int ro, BclError *out_err)
 {
 	assert (env != NULL);
 	assert (rank > 0);

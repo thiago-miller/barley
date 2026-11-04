@@ -2,7 +2,7 @@
 #include <assert.h>
 
 BclBlock *
-bcl_block_alloc (BclEnv *env, float *data, size_t size, int ro, BclError *out_err)
+bcl_block_alloc (const BclEnv *env, const float *data, size_t size, int ro, BclError *out_err)
 {
 	assert (env != NULL);
 
@@ -20,7 +20,7 @@ bcl_block_alloc (BclEnv *env, float *data, size_t size, int ro, BclError *out_er
 		flags |= CL_MEM_COPY_HOST_PTR;
 
 	d_data = clCreateBuffer (bcl_env_context (env),
-			flags, sizeof (float) * size, data, &cl_err);
+			flags, sizeof (float) * size, (float *) data, &cl_err);
 	if (cl_err != CL_SUCCESS)
 		{
 			err = cl_err;
@@ -67,7 +67,7 @@ bcl_block_free (BclBlock *block)
 }
 
 float *
-bcl_block_read (BclBlock *block, BclEnv *env, size_t offset, size_t size, BclError *out_err)
+bcl_block_read (const BclBlock *block, const BclEnv *env, size_t offset, size_t size, BclError *out_err)
 {
 	assert (block != NULL);
 	assert (env != NULL);
@@ -109,7 +109,7 @@ ERR:
 }
 
 BclError
-bcl_block_write (BclBlock *block, BclEnv *env, float *data, size_t offset, size_t size)
+bcl_block_write (BclBlock *block, const BclEnv *env, const float *data, size_t offset, size_t size)
 {
 	assert (block != NULL);
 	assert (env != NULL);
