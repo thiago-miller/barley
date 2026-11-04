@@ -3,7 +3,7 @@
 #include <bcl/cl.h>
 #include <bcl/error.h>
 
-#define BCL_KERNEL_COUNT 1
+#define BCL_KERNEL_COUNT 2
 
 typedef struct _BclEnv BclEnv;
 typedef enum _BclKernelID _BclKernelID;
@@ -20,7 +20,8 @@ struct _BclEnv
 
 enum _BclKernelID
 {
-	BCL_KERNEL_ADD = 0
+	BCL_KERNEL_ADD = 0,
+	BCL_KERNEL_ADD_BROADCAST
 };
 
 static inline cl_device_type

@@ -7,7 +7,8 @@
 #define BCL_KERNEL_PATH "kernels/tensor_ops.cl"
 
 static const char *kernel_names[BCL_KERNEL_COUNT] = {
-	[BCL_KERNEL_ADD] = "tensor_add"
+	[BCL_KERNEL_ADD]           = "tensor_add",
+	[BCL_KERNEL_ADD_BROADCAST] = "tensor_add_broadcast"
 };
 
 static cl_device_id
