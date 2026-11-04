@@ -1,8 +1,6 @@
 #include <bcl/error.h>
-
 #include <bcl/cl.h>
 #include <bcl/cl_error.h>
-
 #include <string.h>
 
 const char *

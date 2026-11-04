@@ -1,11 +1,11 @@
 #include <bcl/tensor.h>
-
 #include <string.h>
 #include <assert.h>
 
 BclTensor *
 bcl_tensor_alloc (BclEnv *env, size_t rank, size_t *shape, float *data, int ro, BclError *out_err)
 {
+	assert (env != NULL);
 	assert (rank > 0);
 	assert (shape != NULL);
 

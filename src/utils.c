@@ -1,10 +1,12 @@
 #include <bcl/utils.h>
-
 #include <stdlib.h>
+#include <assert.h>
 
 char *
 bcl_file_slurp (const char *filename, size_t *out_size, BclError *out_err)
 {
+	assert (filename != NULL);
+
 	BclError err = BCL_SUCCESS;
 	FILE *fp = NULL;
 	char *buf = NULL;
