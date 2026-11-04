@@ -5,6 +5,8 @@
 #include <bcl/error.h>
 #include <stdlib.h>
 
+#define BCL_TENSOR_MAX_RANK 8
+
 typedef struct _BclTensor BclTensor;
 
 struct _BclTensor
@@ -30,10 +32,28 @@ bcl_tensor_shape (const BclTensor *tensor)
 	return tensor != NULL ? tensor->shape : NULL;
 }
 
+static inline const size_t *
+bcl_tensor_strides (const BclTensor *tensor)
+{
+	return tensor != NULL ? tensor->strides : NULL;
+}
+
 static inline size_t
 bcl_tensor_size (const BclTensor *tensor)
 {
 	return tensor != NULL ? tensor->size : 0;
+}
+
+static inline int
+bcl_tensor_is_owner (const BclTensor *tensor)
+{
+	return tensor != NULL ? tensor->owner : 0;
+}
+
+static inline int
+bcl_tensor_is_contiguous (const BclTensor *tensor)
+{
+	return tensor != NULL ? 1 : 0;
 }
 
 static inline cl_mem
