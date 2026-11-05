@@ -34,5 +34,5 @@ bcl_block_size (const BclBlock *block)
 
 BclBlock * bcl_block_alloc (const BclEnv *env, const float *data, size_t size, int ro, BclError *out_err);
 void       bcl_block_free  (BclBlock *block);
-float    * bcl_block_read  (const BclBlock *block, const BclEnv *env, size_t offset, size_t size, BclError *out_err);
-BclError   bcl_block_write (BclBlock *block, const BclEnv *env, const float *data, size_t offset, size_t size);
+float    * bcl_block_read  (const BclEnv *env, const BclBlock *block, size_t offset, size_t size, BclError *out_err);
+BclError   bcl_block_write (const BclEnv *env, BclBlock *block, const float *data, size_t offset, size_t size);

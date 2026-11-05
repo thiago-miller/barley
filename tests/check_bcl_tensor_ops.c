@@ -53,16 +53,14 @@ START_TEST (test_tensor_add_basic)
 	err = bcl_tensor_add (env, a, b, c);
 	ck_assert_int_eq (err, BCL_SUCCESS);
 
-	data_c = bcl_tensor_read (c, env, 0, 0, &err);
+	data_c = bcl_tensor_read (env, c, 0, 0, &err);
 	ck_assert_int_eq (err, BCL_SUCCESS);
 	ck_assert_ptr_nonnull (data_c);
 
 	for (size_t i = 0; i < shape; i++)
 		{
 			float expected = host_a[i] + host_b[i];
-			ck_assert_msg (fabsf (data_c[i] - expected) < 1e-5f,
-					"Error at index %zu: expected %.1f, got %.1f",
-					i, expected, data_c[i]);
+			ck_assert_float_eq_tol (data_c[i], expected, 1e-5);
 		}
 
 	free (data_c);
@@ -72,7 +70,52 @@ START_TEST (test_tensor_add_basic)
 }
 END_TEST
 
-START_TEST(test_tensor_add_broadcast_2d_1d)
+START_TEST (test_tensor_add_scalar)
+{
+	BclError err = BCL_SUCCESS;
+	BclTensor *a = NULL;
+	BclTensor *c = NULL;
+
+	float *data_c = NULL;
+	float s = 0;
+
+	size_t shape[] = {5, 3};
+
+	float data_a[] = {
+		1.0f, 2.0f, 3.0f,
+		4.0f, 5.0f, 6.0f,
+		1.0f, 2.0f, 3.0f,
+		4.0f, 5.0f, 6.0f,
+		4.0f, 5.0f, 6.0f
+	};
+
+	s = 10.0f;
+
+	float expected[] = {
+		11.0f, 12.0f, 13.0f,
+		14.0f, 15.0f, 16.0f,
+		11.0f, 12.0f, 13.0f,
+		14.0f, 15.0f, 16.0f,
+		14.0f, 15.0f, 16.0f
+	};
+
+	a = bcl_tensor_alloc (env, 2, shape, data_a, 1, &err);
+	ck_assert_int_eq (err, BCL_SUCCESS);
+
+	c = bcl_tensor_alloc (env, 2, shape, NULL, 0, &err);
+	ck_assert_int_eq (err, BCL_SUCCESS);
+
+	err = bcl_tensor_add_scalar (env, a, s, c);
+	ck_assert_int_eq (err, BCL_SUCCESS);
+
+	data_c = bcl_tensor_read (env, c, 0, 0, &err);
+
+	for (int i = 0; i < 15; i++)
+		ck_assert_float_eq_tol (data_c[i], expected[i], 1e-5);
+}
+END_TEST
+
+START_TEST (test_tensor_add_broadcast_2d_1d)
 {
 	BclError err = BCL_SUCCESS;
 	BclTensor *a = NULL;
@@ -110,7 +153,7 @@ START_TEST(test_tensor_add_broadcast_2d_1d)
 	err = bcl_tensor_add (env, a, b, c);
 	ck_assert_int_eq (err, BCL_SUCCESS);
 
-	data_c = bcl_tensor_read (c, env, 0, 0, &err);
+	data_c = bcl_tensor_read (env, c, 0, 0, &err);
 
 	for (int i = 0; i < 6; i++)
 		ck_assert_float_eq_tol (data_c[i], expected[i], 1e-5);
@@ -134,6 +177,7 @@ make_tensor_ops_suite (void)
 	tcase_add_checked_fixture (tc_core, setup, teardown);
 
 	tcase_add_test (tc_core, test_tensor_add_basic);
+	tcase_add_test (tc_core, test_tensor_add_scalar);
 	tcase_add_test (tc_core, test_tensor_add_broadcast_2d_1d);
 
 	suite_add_tcase (s, tc_core);

@@ -100,7 +100,6 @@ bcl_tensor_add (const BclEnv *env, const BclTensor *a, const BclTensor *b, BclTe
 	assert (env != NULL);
 	assert (a != NULL && b != NULL && c != NULL);
 
-	BclError err = BCL_SUCCESS;
 	cl_int cl_err = CL_SUCCESS;
 
 	cl_kernel kernel = NULL;
@@ -154,8 +153,35 @@ bcl_tensor_add (const BclEnv *env, const BclTensor *a, const BclTensor *b, BclTe
 	cl_err = clEnqueueNDRangeKernel (bcl_env_queue (env), kernel,
 			1, NULL, &global_work_size, NULL, 0, NULL, NULL);
 
-	if (cl_err != CL_SUCCESS)
-		err = cl_err;
+	return cl_err != CL_SUCCESS ? cl_err : BCL_SUCCESS;
+}
 
-	return err;
+BclError
+bcl_tensor_add_scalar (const BclEnv *env, const BclTensor *a, float s, BclTensor *c)
+{
+	assert (env != NULL);
+	assert (a != NULL && c != NULL);
+
+	cl_int cl_err = CL_SUCCESS;
+	cl_kernel kernel = NULL;
+	cl_mem data_a = NULL;
+	cl_mem data_c = NULL;
+	size_t global_work_size = 0;
+	cl_uint n = 0;
+
+	kernel = bcl_env_kernel (env, BCL_KERNEL_ADD_SCALAR);
+	data_a = bcl_tensor_data (a);
+	data_c = bcl_tensor_data (c);
+	global_work_size = bcl_tensor_size (a);
+	n = global_work_size;
+
+	clSetKernelArg (kernel, 0, sizeof (cl_mem), &data_a);
+	clSetKernelArg (kernel, 1, sizeof (float), &s);
+	clSetKernelArg (kernel, 2, sizeof (cl_mem), &data_c);
+	clSetKernelArg (kernel, 3, sizeof (cl_uint), &n);
+
+	cl_err = clEnqueueNDRangeKernel (bcl_env_queue (env), kernel,
+		1, NULL, &global_work_size, NULL, 0, NULL, NULL);
+
+	return cl_err != CL_SUCCESS ? cl_err : BCL_SUCCESS;
 }

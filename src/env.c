@@ -8,6 +8,7 @@
 
 static const char *kernel_names[BCL_KERNEL_COUNT] = {
 	[BCL_KERNEL_ADD]           = "tensor_add",
+	[BCL_KERNEL_ADD_SCALAR]    = "tensor_add_scalar",
 	[BCL_KERNEL_ADD_BROADCAST] = "tensor_add_broadcast"
 };
 

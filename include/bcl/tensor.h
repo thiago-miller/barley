@@ -63,15 +63,15 @@ bcl_tensor_data (const BclTensor *tensor)
 }
 
 static inline float *
-bcl_tensor_read (const BclTensor *tensor, const BclEnv *env, size_t offset, size_t size, BclError *out_err)
+bcl_tensor_read (const BclEnv *env, const BclTensor *tensor, size_t offset, size_t size, BclError *out_err)
 {
-	return tensor != NULL ? bcl_block_read (tensor->block, env, offset, size, out_err) : NULL;
+	return env != NULL && tensor != NULL ? bcl_block_read (env, tensor->block, offset, size, out_err) : NULL;
 }
 
 static inline int
-bcl_tensor_write (BclTensor *tensor, const BclEnv *env, const float *data, size_t offset, size_t size)
+bcl_tensor_write (const BclEnv *env, BclTensor *tensor, const float *data, size_t offset, size_t size)
 {
-	return tensor != NULL ? bcl_block_write (tensor->block, env, data, offset, size) : EINVAL;
+	return env != NULL && tensor != NULL ? bcl_block_write (env, tensor->block, data, offset, size) : EINVAL;
 }
 
 BclTensor * bcl_tensor_alloc (const BclEnv *env, size_t rank, const size_t *shape, const float *data, int ro, BclError *out_err);

@@ -11,6 +11,19 @@ tensor_add (
 		c[gid] = a[gid] + b[gid];
 }
 
+__kernel void
+tensor_add_scalar (
+	__global const float *a,
+	const float s,
+	__global       float *c,
+	const uint  n
+)
+{
+	uint gid = get_global_id (0);
+	if (gid < n)
+		c[gid] = a[gid] + s;
+}
+
 static inline void
 __compute_broadcast_index (
 	uint *idx_a,
