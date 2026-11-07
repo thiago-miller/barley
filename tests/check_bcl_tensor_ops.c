@@ -50,7 +50,8 @@ START_TEST (test_tensor_add_basic)
 	c = bcl_tensor_alloc (env, 1, &shape, NULL, 0, &err);
 	ck_assert_int_eq (err, BCL_SUCCESS);
 
-	err = bcl_tensor_add (env, a, b, c);
+	c = bcl_tensor_add (env, a, b, c, &err);
+	ck_assert_ptr_nonnull (c);
 	ck_assert_int_eq (err, BCL_SUCCESS);
 
 	data_c = bcl_tensor_read (env, c, 0, 0, &err);
@@ -105,7 +106,8 @@ START_TEST (test_tensor_add_scalar)
 	c = bcl_tensor_alloc (env, 2, shape, NULL, 0, &err);
 	ck_assert_int_eq (err, BCL_SUCCESS);
 
-	err = bcl_tensor_add_scalar (env, a, s, c);
+	c = bcl_tensor_add_scalar (env, a, s, c, &err);
+	ck_assert_ptr_nonnull (c);
 	ck_assert_int_eq (err, BCL_SUCCESS);
 
 	data_c = bcl_tensor_read (env, c, 0, 0, &err);
@@ -134,8 +136,6 @@ START_TEST (test_tensor_add_broadcast_2d_1d)
 		10.0f, 20.0f, 30.0f
 	};
 
-	size_t shape_c[] = {2, 3};
-
 	float expected[6] = {
 		11.0f, 22.0f, 33.0f,
 		14.0f, 25.0f, 36.0f
@@ -147,10 +147,8 @@ START_TEST (test_tensor_add_broadcast_2d_1d)
 	b = bcl_tensor_alloc (env, 1, shape_b, data_b, 0, &err);
 	ck_assert_int_eq (err, BCL_SUCCESS);
 
-	c = bcl_tensor_alloc (env, 2, shape_c, NULL, 0, &err);
-	ck_assert_int_eq (err, BCL_SUCCESS);
-
-	err = bcl_tensor_add (env, a, b, c);
+	c = bcl_tensor_add (env, a, b, NULL, &err);
+	ck_assert_ptr_nonnull (c);
 	ck_assert_int_eq (err, BCL_SUCCESS);
 
 	data_c = bcl_tensor_read (env, c, 0, 0, &err);
@@ -161,6 +159,81 @@ START_TEST (test_tensor_add_broadcast_2d_1d)
 	free (data_c);
 	bcl_tensor_free (a);
 	bcl_tensor_free (b);
+	bcl_tensor_free (c);
+}
+END_TEST
+
+START_TEST (test_tensor_sum_axis1)
+{
+	BclError err = BCL_SUCCESS;
+	BclTensor *a = NULL;
+	BclTensor *c = NULL;
+	float *data_c = NULL;
+
+	size_t shape_a[2] = { 4, 4 };
+	float data_a[16] = {
+		1.0f, 2.0f, 3.0f, 4.0f,
+		4.0f, 5.0f, 6.0f, 7.0f,
+		1.0f, 2.0f, 3.0f, 4.0f,
+		4.0f, 5.0f, 6.0f, 7.0f,
+	};
+
+	float expected[4] = { 10.0f, 22.0f, 10.0f, 22.0f };
+
+	a = bcl_tensor_alloc (env, 2, shape_a, data_a, 0, &err);
+	ck_assert_int_eq (err, BCL_SUCCESS);
+
+	c = bcl_tensor_sum (env, a, 1, NULL, &err);
+	ck_assert_ptr_nonnull (c);
+	ck_assert_int_eq (err, BCL_SUCCESS);
+	ck_assert_int_eq (bcl_tensor_rank (c), 1);
+
+	data_c = bcl_tensor_read (env, c, 0, 0, &err);
+	ck_assert_int_eq (err, BCL_SUCCESS);
+	ck_assert_ptr_nonnull (data_c);
+
+	for (int i = 0; i < 4; i++)
+		ck_assert_float_eq_tol (data_c[i], expected[i], 1e-5);
+
+	free (data_c);
+	bcl_tensor_free (a);
+	bcl_tensor_free (c);
+}
+END_TEST
+
+START_TEST (test_tensor_sum_axis0)
+{
+	BclError err = BCL_SUCCESS;
+	BclTensor *a = NULL;
+	BclTensor *c = NULL;
+	float *data_c = NULL;
+
+	size_t shape_a[2] = { 2, 3 };
+	float data_a[6] = {
+		1.0f, 2.0f, 3.0f,
+		4.0f, 5.0f, 6.0f
+	};
+
+	float expected[3] = { 5.0f, 7.0f, 9.0f }; /* 1+4, 2+5, 3+6 */
+
+	a = bcl_tensor_alloc (env, 2, shape_a, data_a, 0, &err);
+	ck_assert_int_eq (err, BCL_SUCCESS);
+
+	c = bcl_tensor_sum (env, a, 0, NULL, &err);
+	ck_assert_ptr_nonnull (c);
+	ck_assert_int_eq (err, BCL_SUCCESS);
+	ck_assert_int_eq (bcl_tensor_rank (c), 1);
+	ck_assert_int_eq (bcl_tensor_shape (c)[0], 3);
+
+	data_c = bcl_tensor_read (env, c, 0, 0, &err);
+	ck_assert_int_eq (err, BCL_SUCCESS);
+	ck_assert_ptr_nonnull (data_c);
+
+	for (int i = 0; i < 3; i++)
+		ck_assert_float_eq_tol (data_c[i], expected[i], 1e-5);
+
+	free (data_c);
+	bcl_tensor_free (a);
 	bcl_tensor_free (c);
 }
 END_TEST
@@ -179,6 +252,8 @@ make_tensor_ops_suite (void)
 	tcase_add_test (tc_core, test_tensor_add_basic);
 	tcase_add_test (tc_core, test_tensor_add_scalar);
 	tcase_add_test (tc_core, test_tensor_add_broadcast_2d_1d);
+	tcase_add_test (tc_core, test_tensor_sum_axis1);
+	tcase_add_test (tc_core, test_tensor_sum_axis0);
 
 	suite_add_tcase (s, tc_core);
 
