@@ -6,7 +6,7 @@
 #define BCL_KERNEL_COUNT 3
 
 typedef struct _BclEnv BclEnv;
-typedef enum _BclKernelID _BclKernelID;
+typedef enum _BclKernelID BclKernelID;
 
 struct _BclEnv
 {
