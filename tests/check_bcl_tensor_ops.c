@@ -11,9 +11,9 @@ setup (void)
 {
 	BclError err = BCL_SUCCESS;
 
-	env = bcl_env_alloc (CL_DEVICE_TYPE_GPU, &err);
+	env = bcl_env_alloc (BCL_DEVICE_TYPE_GPU, &err);
 	if (err != BCL_SUCCESS)
-		env = bcl_env_alloc (CL_DEVICE_TYPE_CPU, &err);
+		env = bcl_env_alloc (BCL_DEVICE_TYPE_CPU, &err);
 
 	ck_assert_msg (err == BCL_SUCCESS,
 			"Failed to init OpenCL env");

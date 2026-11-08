@@ -13,8 +13,19 @@ static const char *kernel_names[BCL_KERNEL_COUNT] = {
 	[BCL_KERNEL_SUM]           = "tensor_sum"
 };
 
+static cl_device_type
+bcl_to_cl_device_type (BclDeviceType d)
+{
+	switch (d)
+		{
+		case BCL_DEVICE_TYPE_CPU: return CL_DEVICE_TYPE_CPU;
+		case BCL_DEVICE_TYPE_GPU: return CL_DEVICE_TYPE_GPU;
+		default:                  return CL_DEVICE_TYPE_DEFAULT;
+		}
+}
+
 static cl_device_id
-bcl_get_device_id (cl_device_type device_type, BclError *out_err)
+bcl_get_device_id (BclDeviceType device_type, BclError *out_err)
 {
 	BclError err = BCL_SUCCESS;
 	cl_int cl_err = CL_SUCCESS;
@@ -43,7 +54,8 @@ bcl_get_device_id (cl_device_type device_type, BclError *out_err)
 		{
 			cl_uint num_devices = 0;
 
-			cl_err = clGetDeviceIDs (platforms[i], device_type, 1, &device_id, &num_devices);
+			cl_err = clGetDeviceIDs (platforms[i], bcl_to_cl_device_type (device_type),
+					1, &device_id, &num_devices);
 
 			if (cl_err == CL_SUCCESS && num_devices > 0)
 				{
@@ -92,7 +104,7 @@ bcl_create_kernels (cl_kernel *kernels, cl_program program)
 }
 
 BclEnv *
-bcl_env_alloc (cl_device_type device_type, BclError *out_err)
+bcl_env_alloc (BclDeviceType device_type, BclError *out_err)
 {
 	BclEnv *env = NULL;
 

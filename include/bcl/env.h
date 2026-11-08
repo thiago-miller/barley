@@ -5,8 +5,9 @@
 
 #define BCL_KERNEL_COUNT 4
 
-typedef struct _BclEnv BclEnv;
-typedef enum _BclKernelID BclKernelID;
+typedef struct _BclEnv        BclEnv;
+typedef enum   _BclKernelID   BclKernelID;
+typedef enum   _BclDeviceType	BclDeviceType;
 
 struct _BclEnv
 {
@@ -24,6 +25,13 @@ enum _BclKernelID
 	BCL_KERNEL_ADD_SCALAR,
 	BCL_KERNEL_ADD_BROADCAST,
 	BCL_KERNEL_SUM
+};
+
+enum _BclDeviceType
+{
+	BCL_DEVICE_TYPE_ANY = 0,
+	BCL_DEVICE_TYPE_CPU,
+	BCL_DEVICE_TYPE_GPU
 };
 
 static inline cl_device_type
@@ -62,5 +70,5 @@ bcl_env_kernel (const BclEnv *env, size_t i)
 	return env != NULL ? env->kernels[i] : NULL;
 }
 
-BclEnv * bcl_env_alloc (cl_device_type device_type, BclError *out_err);
+BclEnv * bcl_env_alloc (BclDeviceType device_type, BclError *out_err);
 void     bcl_env_free  (BclEnv *env);
